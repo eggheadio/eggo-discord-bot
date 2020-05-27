@@ -43,3 +43,5 @@ One thing to note is that if a message already exists it needs to be loaded by t
 [discord-js-bot-guide](https://github.com/AnIdiotsGuide/discordjs-bot-guide/blob/master/SUMMARY.md)
 
 [Discord-EmojiToRole](https://github.com/NKN1396/Discord-EmojiToRole) had a lot of initial code that was clipped to get this running. It wasn't written for v12, but logically it is pretty solid.
+
+[Deploy your bot to Heroku](https://shiffman.net/a2z/bot-heroku/) Daniel Shiffman has an awesome tutorial
