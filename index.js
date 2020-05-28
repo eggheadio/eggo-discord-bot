@@ -3,6 +3,16 @@ const Discord = require('discord.js')
 const client = new Discord.Client()
 const config = require('./config.json')
 
+const libhoney = require('libhoney')
+const hny = new libhoney({
+  writeKey: process.env.HONEYCOMB_TOKEN || 'asf',
+  dataset: 'discord',
+  serviceName: 'eggo-discord-bot',
+  transmission: 'writer',
+})
+
+const EGGO_BOT_ID = '417792875355701249'
+
 function cleanEmojiDiscriminator(emojiDiscriminator) {
   var regEx = /[A-Za-z0-9_]+:[0-9]+/
   var cleaned = regEx.exec(emojiDiscriminator)
@@ -11,7 +21,7 @@ function cleanEmojiDiscriminator(emojiDiscriminator) {
 }
 
 client.once('ready', async () => {
-  console.log('let us go')
+  console.log('eggo is ready')
   for (var {channel, message: message_id, reactions} of config) {
     var channel = await client.channels.cache.get(channel)
     var message = await channel.messages.fetch(message_id)
@@ -29,6 +39,24 @@ client.once('ready', async () => {
       }
     }
   }
+})
+
+client.on('message', (message) => {
+  let ev = hny.newEvent()
+  ev.add({eventType: 'message', authorId: message.author.id})
+  if (message.author.id === EGGO_BOT_ID) {
+    ev.addField('isBot', true)
+    ev.send()
+    return
+  }
+
+  if (message.content === '!avatar') {
+    // If the message is "what is my avatar"
+    // Send the user's avatar URL
+    message.reply(message.author.displayAvatarURL())
+    ev.addField('avatar', true)
+  }
+  ev.send()
 })
 
 function getEmojiDiscriminator(emoji) {
@@ -110,5 +138,5 @@ client.on('messageReactionRemove', async (messageReaction, user) => {
 })
 
 // https://discordapp.com/channels/365559264850477066/715004775300726825/715013654575054898
-
+hny.sendNow({booting: true})
 client.login(process.env.BOT_TOKEN)
