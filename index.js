@@ -8,7 +8,7 @@ const hny = new libhoney({
   writeKey: process.env.HONEYCOMB_TOKEN || 'asf',
   dataset: 'discord',
   serviceName: 'eggo-discord-bot',
-  transmission: 'writer',
+  // transmission: 'writer',
 })
 
 const EGGO_BOT_ID = '417792875355701249'
