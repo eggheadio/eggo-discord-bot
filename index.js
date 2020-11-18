@@ -2,6 +2,7 @@ require('dotenv').config()
 const Discord = require('discord.js')
 const client = new Discord.Client()
 const config = require('./config.json')
+const {phraseFromUsername} = require('./phrases')
 
 const libhoney = require('libhoney')
 const hny = new libhoney({
@@ -71,8 +72,9 @@ function getEmojiDiscriminator(emoji) {
 client.on('messageReactionAdd', async (messageReaction, user) => {
   if (user == client.user) return
   var member = await messageReaction.message.guild.members.cache.get(user.id)
+  console.log(member)
   var emojiDiscriminator = getEmojiDiscriminator(messageReaction.emoji)
-  for (var {channel, reactions, disjoint} of config) {
+  for (var {channel, reactions, disjoint, intro_channel} of config) {
     if (channel != messageReaction.message.channel.id) continue
     var rolesNew = []
     for (var role of member.roles.cache.keys()) {
@@ -97,6 +99,12 @@ client.on('messageReactionAdd', async (messageReaction, user) => {
     rolesNew.push.apply(rolesNew, rolesAllowList)
     //Make sure none of the roles on the "add" list get removed again
     await member.roles.set(rolesNew).catch((error) => console.error(error))
+
+    if (rolesNew.includes('718528216511545397')) {
+      const phrase = phraseFromUsername(member.nickname)
+      client.channels.get(intro_channel).send(phrase)
+    }
+
     if (disjoint)
       await messageReaction.remove(user).catch((error) => console.error(error))
   }
