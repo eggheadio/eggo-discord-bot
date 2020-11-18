@@ -100,9 +100,11 @@ client.on('messageReactionAdd', async (messageReaction, user) => {
     //Make sure none of the roles on the "add" list get removed again
     await member.roles.set(rolesNew).catch((error) => console.error(error))
 
+    console.log(rolesNew)
+
     if (rolesNew.includes('718528216511545397')) {
-      const phrase = phraseFromUsername(member.nickname)
-      client.channels.get(intro_channel).send(phrase)
+      const phrase = phraseFromUsername(`<@${member.id}>`)
+      client.channels.cache.get(intro_channel).send(`_${phrase}_`)
     }
 
     if (disjoint)
