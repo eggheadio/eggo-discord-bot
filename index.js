@@ -77,13 +77,15 @@ client.on('messageReactionAdd', async (messageReaction, user) => {
   for (var {channel, reactions, disjoint, intro_channel} of config) {
     if (channel != messageReaction.message.channel.id) continue
     var rolesNew = []
+    var announceArrival = false
     for (var role of member.roles.cache.keys()) {
       rolesNew.push(role)
     }
     var rolesAllowList = []
     var rolesBlockList = []
-    for (var {emoji, roles} of reactions) {
+    for (var {emoji, roles, announce = false} of reactions) {
       if (emojiDiscriminator == emoji) {
+        announceArrival = announceArrival || announce
         rolesAllowList.push.apply(rolesAllowList, roles) //Prototyping the push function, might be buggy
       }
       rolesBlockList.push.apply(rolesBlockList, roles)
@@ -102,9 +104,9 @@ client.on('messageReactionAdd', async (messageReaction, user) => {
 
     console.log(rolesNew)
 
-    if (rolesNew.includes('718528216511545397')) {
+    if (announceArrival) {
       const phrase = phraseFromUsername(`<@${member.id}>`)
-      client.channels.cache.get(intro_channel).send(`_${phrase}_`)
+      client.channels.cache.get('754437688769249371').send(`_${phrase}_`)
     }
 
     if (disjoint)
