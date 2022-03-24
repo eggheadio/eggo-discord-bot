@@ -1,8 +1,11 @@
 require('dotenv').config()
 const Discord = require('discord.js')
-const client = new Discord.Client()
+const {Client, Intents} = require('discord.js')
 const config = require('./config.json')
 const {phraseFromUsername} = require('./phrases')
+
+// Updated client to be able to apply specific permissions such as `partials: [ 'CHANNEL']` to be able to send dm's
+const client = new Client({ ws: {intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.DIRECT_MESSAGES], partials: [ 'CHANNEL']} });
 
 const libhoney = require('libhoney')
 const hny = new libhoney({
@@ -42,7 +45,7 @@ client.once('ready', async () => {
   }
 })
 
-client.on('message', (message) => {
+client.on('message', async (message) => {
   let ev = hny.newEvent()
   ev.add({eventType: 'message', authorId: message.author.id})
   if (message.author.id === EGGO_BOT_ID) {
@@ -57,6 +60,17 @@ client.on('message', (message) => {
     message.reply(message.author.displayAvatarURL())
     ev.addField('avatar', true)
   }
+
+  if (message.content === '!Announcement' && message.channel.id === '810255091751845888'){
+    await message.author.send('What is your announcement?')
+
+    const filter = (m) => m.author.id === message.author.id
+    const userAnnouncement = await message.author.dmChannel.awaitMessages(filter, {max: 1})
+      .then((collected) => collected.first().content)
+    message.channel.send(`@everyone ${userAnnouncement}`)
+    message.delete()
+  }
+
   ev.send()
 })
 
@@ -72,7 +86,6 @@ function getEmojiDiscriminator(emoji) {
 client.on('messageReactionAdd', async (messageReaction, user) => {
   if (user == client.user) return
   var member = await messageReaction.message.guild.members.cache.get(user.id)
-  console.log(member)
   var emojiDiscriminator = getEmojiDiscriminator(messageReaction.emoji)
   for (var {channel, reactions, disjoint, intro_channel} of config) {
     if (channel != messageReaction.message.channel.id) continue
@@ -101,8 +114,6 @@ client.on('messageReactionAdd', async (messageReaction, user) => {
     rolesNew.push.apply(rolesNew, rolesAllowList)
     //Make sure none of the roles on the "add" list get removed again
     await member.roles.set(rolesNew).catch((error) => console.error(error))
-
-    console.log(rolesNew)
 
     if (announceArrival) {
       const phrase = phraseFromUsername(`<@${member.id}>`)
