@@ -61,14 +61,19 @@ client.on('message', async (message) => {
     ev.addField('avatar', true)
   }
 
-  if (message.content === '!Announcement' && message.channel.id === '810255091751845888'){
+  if (message.content === '!Announcement' && message.channel.id === '953362393071775814'){
     await message.author.send('What is your announcement?')
 
     const filter = (m) => m.author.id === message.author.id
     const userAnnouncement = await message.author.dmChannel.awaitMessages(filter, {max: 1})
       .then((collected) => collected.first().content)
-    message.channel.send(`@everyone ${userAnnouncement}`)
-    message.delete()
+    if (userAnnouncement === 'cancel'){
+      await message.author.send('Canceled the announcement.')
+      message.delete()
+    }else{
+      await message.channel.send(`@everyone ${userAnnouncement}`)
+      message.delete()
+    }
   }
 
   ev.send()
