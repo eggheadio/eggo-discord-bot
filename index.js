@@ -63,7 +63,7 @@ client.on('message', async (message) => {
 
   const announcementChannel = '953362393071775814'
 
-  if (message.content.toLocaleLowerCase() === '!announcement' && message.channel.id === announcementChannel){
+  if (message.content.toLowerCase() === '!announcement' && message.channel.id === announcementChannel){
     await message.author.send('What is your announcement?')
 
     const filter = (m) => m.author.id === message.author.id
