@@ -61,7 +61,9 @@ client.on('message', async (message) => {
     ev.addField('avatar', true)
   }
 
-  if (message.content === '!Announcement' && message.channel.id === '953362393071775814'){
+  const announcementChannel = '953362393071775814'
+
+  if (message.content.toLocaleLowerCase() === '!announcement' && message.channel.id === announcementChannel){
     await message.author.send('What is your announcement?')
 
     const filter = (m) => m.author.id === message.author.id
